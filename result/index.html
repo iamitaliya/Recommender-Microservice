@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script dcript type="text/javascript" src="static/require.js"></script> -->
+    <!-- <link rel="stylesheet" href="/style.css" type="text/css"> -->
+    <script type="text/javascript" src="static/data.js"> </script>
+    <!-- <script type="text/javascript" src="index.js"> </script> -->
+    <title>Movie Recommender</title>
+</head>
+<style>
+    /* code for autocomplete */
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font: 16px Arial;
+    }
+
+    .autocomplete {
+        /*the container must be positioned relative:*/
+        position: relative;
+        display: inline-block;
+    }
+
+    input {
+        border: 1px solid transparent;
+        background-color: #f1f1f1;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    input[type=text] {
+        background-color: #f1f1f1;
+        width: 100%;
+    }
+
+    input[type=submit] {
+        background-color: DodgerBlue;
+        color: #fff;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+    }
+
+    .autocomplete-items div:hover {
+        /*when hovering an item:*/
+        background-color: #e9e9e9;
+    }
+
+    .autocomplete-active {
+        /*when navigating through the items using the arrow keys:*/
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+
+    /* autocomplete ends */
+    label {
+        margin: auto;
+        color: black;
+        padding: 8px;
+        font-size: xx-large;
+    }
+
+    input[type=text] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+    }
+
+    input[type=button],
+    input[type=submit],
+    input[type=reset] {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        text-decoration: none;
+        margin: 4px 2px;
+        cursor: pointer;
+        align-items: center;
+    }
+
+    form {
+        margin-left: auto;
+        margin-left: auto;
+        text-align: center;
+    }
+
+    ul {
+        margin: auto;
+        width: 50%;
+        list-style-type: none;
+        padding: 10px;
+    }
+
+
+    li {
+        text-align: center;
+        padding: 10px;
+        margin: 10px;
+        background-color: #4CAF50;
+    }
+</style>
+<script type="text/javascript">
+    function clicked(bla) {
+        console.log("clicked")
+        alert(bla)
+        recieve_recommendation(bla)
+    }
+</script>
+
+<body>
+
+    <form>
+        <label for="Movies Watched" id="main_label">Enter the movie you have watched</label>
+        <br>
+        <br>
+        <form autocomplete="off">
+            <div class=" autocomplete" style="width:600px;">
+                <input id="watched" type="text" name="watched_it" placeholder="Movie Name">
+            </div>
+            <br>
+            <input type="button" id="get_button"
+                onclick="recieve_recommendation(document.getElementById('watched').value)" value="Recommend">
+
+            <input type="button" onClick="window.location.reload();" style="margin-left: 30px;" value="Reset">
+        </form>
+    </form>
+    <br>
+    <br>
+
+    <center><label for="Recommend label" id="rec_label">You should watch:</label></center>
+
+    <ul id="show_result"></ul>
+    <br>
+    <br>
+    <br>
+    <center><label for="no_recommend" id="no_rec" style="color: rgb(97, 96, 96);font-size: larger;">No movie
+            choosen</label></center>
+</body>
+<script>
+    autocomplete(document.getElementById("watched"), movies);
+</script>
+
+</html>
