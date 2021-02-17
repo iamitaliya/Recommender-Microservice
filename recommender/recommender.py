@@ -20,7 +20,7 @@ def get_recommendation(movie):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=4321, debug=True)
+    app.run(host='0.0.0.0', port=2211, debug=True)
 
 # TODO:
 # start a server to recieve requests

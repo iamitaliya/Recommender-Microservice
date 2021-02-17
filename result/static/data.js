@@ -2,7 +2,7 @@ function recieve_recommendation(movie_name) {
     if (!movie_name || movie_name.trim() === "") {
         alert("Please Enter a movie name")
     } else {
-        fetch('http://localhost:4321/get-recommendation/' + movie_name.trim()).then(function (response) {
+        fetch('http://localhost:2211/get-recommendation/' + movie_name.trim()).then(function (response) {
             // The API call was successful!
             document.getElementById("show_result")
             return response.text();

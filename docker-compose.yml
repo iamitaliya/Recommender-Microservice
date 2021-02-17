@@ -9,26 +9,26 @@ services:
     networks:
       - recsys
     ports:
-      - "5432:5432"
+      - "5432:2311"
 
   collector:
     build: ./collector
     command: tail -F anything
     depends_on:
-      - database
+      - movie_database
     networks:
       - recsys
     ports:
-      - "4320:4320"
+      - "2111:2111"
 
   recommender:
     build: ./recommender
     depends_on:
-      - database
+      - movie_database
     networks:
       - recsys
     ports:
-      - "4321:4321"
+      - "2211:2211"
 
   result:
     build: ./result
@@ -37,7 +37,7 @@ services:
     command:
       [
         "./wait-for-it.sh",
-        "collector:4320",
+        "collector:2111",
         "-t",
         "0",
         "--",
@@ -47,11 +47,11 @@ services:
     networks:
       - recsys
     ports:
-      - "8080:8080"
+      - "2411:2411"
 
 volumes:
   database-data: # named volumes can be managed easier using docker-compose
 
 networks:
-  neural:
+  recsys:
     driver: bridge
