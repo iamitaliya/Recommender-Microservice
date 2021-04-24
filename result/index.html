@@ -123,6 +123,13 @@
     }
 </style>
 <script type="text/javascript">
+    // gets movie name from json
+    m = getJSON('/static/movies.json')
+    console.log(m)
+    movies = []
+    var promiseB = m.then(function (result) {
+        movies.push(...result)
+    });
     function clicked(bla) {
         console.log("clicked")
         alert(bla)

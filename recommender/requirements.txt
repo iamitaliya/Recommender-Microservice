@@ -2,3 +2,7 @@ flask
 flask-cors
 psycopg2-binary
 pytest
+scipy
+pandas
+sklearn
+numpy

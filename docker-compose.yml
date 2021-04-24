@@ -5,11 +5,14 @@ services:
     env_file:
       - database.env # configure postgres
     volumes:
-      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - database-data:/var/lib/postgresql/mdata/ # persist data even if container shuts down
     networks:
       - recsys
+    expose: 
+      - "2311"
     ports:
-      - "5432:2311"
+      - "2311:5432"
+    command: -p 2311
 
   collector:
     build: ./collector
