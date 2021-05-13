@@ -143,10 +143,15 @@ def recommend(movie_id):
 @app.route("/get-recommendation/<movie>", methods=['GET'])
 @cross_origin()
 def get_recommendation(movie):
-    recommended_movies = recommend(get_movie_id(movie.replace("%20", " ")))
+    recommended_movies = recommend(get_movie_id(clean_request(movie)))
     print("recieved request for ", movie)
-    # TODO: get movie names and cobine it to a string with "," seperator
     return ",".join(recommended_movies)
+
+
+def clean_request(movie):
+    if (movie.find("%20")):
+        movie = movie.replace("%20", " ")
+    return movie
 
 
 if __name__ == '__main__':

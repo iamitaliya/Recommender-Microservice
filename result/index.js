@@ -59,7 +59,9 @@ function toJS(data) {
             console.log(err)
         } else {
             console.log(" JSON file created")
+            return true
         }
+        return false
     })
 
 }

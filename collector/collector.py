@@ -74,11 +74,21 @@ def data_download(url):
     return [movies_data, ratings_data, tags_data]
 
 
-def data_cleaning(data):
-    return pd.DataFrame(data)
+def remove_na(data):
+    data.dropna(axis=0, inplace=True)
+    return data
+
+
+def remove_duplicates(data):
+    data.drop_duplicates(inplace=True)
+    return data
 
 
 def load_tables(movies, m_ratings):
+    movies = remove_na(movies)
+    movies = remove_duplicates(movies)
+    m_ratings = remove_na(m_ratings)
+
     conn = database_connection()
     cur = conn.cursor()
     cur.execute("""DELETE FROM movie_table""")
