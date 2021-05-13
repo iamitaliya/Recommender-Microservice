@@ -30,10 +30,10 @@ jobs:
           
       
       - name: Testing collector
-        run: python3 -m pytest 
+        run: python3 -m pytest collector/test_collector.py 
         
       - name: Testing Recommender
-        run: python3 -m pytest
+        run: python3 -m pytest recommender/test_recommender.py
       
     
       - name: Testing Result    
