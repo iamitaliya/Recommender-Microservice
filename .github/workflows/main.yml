@@ -24,7 +24,8 @@ jobs:
         run: |
           pip3 install setuptools
           pip3 install pytest
-          pip3 install -r collector/requirements.txt
+          pip3 install wget
+          pip3 install -r recommender/requirements.txt
           npm config set user 0
           npm config set unsafe-perm true
           
