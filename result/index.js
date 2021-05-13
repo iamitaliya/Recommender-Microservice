@@ -64,7 +64,8 @@ function toJS(data) {
         return false
     })
 
+
 }
 
-
+module.exports = toJS;
 // get movie names from database and store it somewher to autocomplete
