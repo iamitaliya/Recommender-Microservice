@@ -1,10 +1,9 @@
-import recommender
 import pytest
+import recommender
 
-movie = "The%20Godfather"
 
-
-def is_cleaned():
+def test_is_cleaned():
+    movie = "The%20Godfather"
     movie = recommender.clean_request(movie)
     assert "%20" not in movie, 'Test Passed: The request is cleaned'
 
