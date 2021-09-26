@@ -15,7 +15,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 def database_connection():
     conn = psycopg2.connect(database="movie_rec", user="admin",
-                            password="admin", host="movie_database", port="2311")
+                            password="admin", host="movie_database", port="5432")
     return conn
 
 
@@ -146,6 +146,12 @@ def get_recommendation(movie):
     recommended_movies = recommend(get_movie_id(clean_request(movie)))
     print("recieved request for ", movie)
     return ",".join(recommended_movies)
+
+
+# check if application is running
+@app.route("/api/check-status", methods=['GET'])
+def check_status():
+    return jsonify({"status": "success"})
 
 
 def clean_request(movie):

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Use this script to test if a given TCP host/port are available
-echo "sleeping"
-sleep 10
-echo "sleeping done"
+# echo "sleeping"
+# sleep 5
+# echo "sleeping done"
 WAITFORIT_cmdname=${0##*/}
 
 echoerr() { if [[ $WAITFORIT_QUIET -ne 1 ]]; then echo "$@" 1>&2; fi }
@@ -41,7 +41,7 @@ wait_for()
             (echo -n > /dev/tcp/$WAITFORIT_HOST/$WAITFORIT_PORT) >/dev/null 2>&1
             WAITFORIT_result=$?
         fi
-        if [[ $WAITFORIT_result -eq 1 ]]; then
+        if [[ $WAITFORIT_result -eq 0 ]]; then
             WAITFORIT_end_ts=$(date +%s)
             echoerr "$WAITFORIT_cmdname: $WAITFORIT_HOST:$WAITFORIT_PORT is available after $((WAITFORIT_end_ts - WAITFORIT_start_ts)) seconds"
             break
@@ -63,7 +63,7 @@ wait_for_wrapper()
     trap "kill -INT -$WAITFORIT_PID" INT
     wait $WAITFORIT_PID
     WAITFORIT_RESULT=$?
-    if [[ $WAITFORIT_RESULT -ne 0 ]]; then
+    if [[ $WAITFORIT_RESULT -ne 1 ]]; then
         echoerr "$WAITFORIT_cmdname: timeout occurred after waiting $WAITFORIT_TIMEOUT seconds for $WAITFORIT_HOST:$WAITFORIT_PORT"
     fi
     return $WAITFORIT_RESULT

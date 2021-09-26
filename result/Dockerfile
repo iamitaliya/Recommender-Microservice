@@ -14,4 +14,4 @@ ENV PORT 2411
 
 EXPOSE 2411
 
-CMD ["node", "index.js"]
+CMD ["node", "server.js"]

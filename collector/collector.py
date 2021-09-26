@@ -1,23 +1,28 @@
 from datetime import datetime, time
+from types import ClassMethodDescriptorType
+from flask import Flask, json, jsonify, request
+from flask_cors import CORS, cross_origin
 import pandas as pd
 import wget
 import zipfile
 import os
 import psycopg2
-import flask
 import multiprocessing
-app = flask.Flask('__name__')
-
+app = Flask('__name__')
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+PASSWORD = "MOVIES"
+processing = False
 
 def API(Conf):
     print('In API selction')
     app.run(host='0.0.0.0', port=2111)
 
-
+host = 'movie_database'
 # Connect to postgres sql database
 def database_connection():
     conn = psycopg2.connect(database="movie_rec", user="admin",
-                            password="admin", host="movie_database", port="2311")
+                            password="admin", host="movie_database", port="5432")
     return conn
 
 
@@ -114,20 +119,39 @@ def load_tables(movies, m_ratings):
     print("table loaded successfully")
 
 
+# check if application is running
+@app.route("/api/check-status", methods=['GET'])
+def check_status():
+    return jsonify({"status": "success"})
+
+# function to clean data
+@app.route("/api/load-data/<password>", methods=['GET', 'POST'])
+def clean_data(password):
+    global processing
+    if not processing:
+        processing = True
+        try:
+            if password == PASSWORD:
+                print("Data loading process started")
+                url = "http://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
+                movies, ratings, tags = data_download(url)
+                create_tables()
+                load_tables(movies, ratings)
+
+                print("Data loaded successfully")
+                processing = False
+                return jsonify({"status": "success"})
+            else:
+                print("Wrong password")
+                processing = False
+                return jsonify({"status": "Invalid Password"})
+        except:
+            processing = False
+            return jsonify({"status": "Internal Error"})
+    else:
+        print(" lol ")
+        return {"status": "Wait for process to finish"}
+
+
 if __name__ == "__main__":
-    config = {"Something": "SomethingElese"}
-    p = multiprocessing.Process(target=API, args=(config))
-    p.start()
-    print("Server Started")
-
-    url = "http://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
-    movies, ratings, tags = data_download(url)
-    t1 = datetime.now()
-    create_tables()
-    load_tables(movies, ratings)
-    t2 = datetime.now()
-    print("Time taken", t2 - t1)
-
-    p.terminate()
-    p.join()
-    print("Server Stopped")
+    app.run(host='0.0.0.0', port=2111, debug=True)
