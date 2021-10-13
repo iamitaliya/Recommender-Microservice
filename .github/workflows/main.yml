@@ -50,13 +50,14 @@ jobs:
       - name: Run a multi-line script
         run: docker-compose up -d
         
-      - name: Wait 10s
-        run: sleep 10
+      - name: Wait 100s
+        run: sleep 100
         
       - name: Currently running contaioners
         run: docker ps
         
-        
       - name: History of all contaioners
         run: docker ps -a
-        
+
+      - name: Checking Microservices status
+        run: python3 -m pytest microservice_test.py

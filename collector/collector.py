@@ -149,7 +149,6 @@ def clean_data(password):
             processing = False
             return jsonify({"status": "Internal Error"})
     else:
-        print(" lol ")
         return {"status": "Wait for process to finish"}
 
 
