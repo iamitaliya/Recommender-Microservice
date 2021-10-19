@@ -3,6 +3,11 @@ var app = express();
 var path = require('path');
 var fs = require('fs');
 var fetch = require('node-fetch')
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 function openPort(app) {
     app.use("/static", express.static('./static/'));
@@ -13,11 +18,11 @@ function openPort(app) {
 
     app.get('/api/check-status', async function(req, res){
         try {
-            res.send({status : "success"})
+            res.send(JSON.stringify({status : "success"}))
         }
         catch(err) {
             console.log(err)
-            res.send({res : "error retriving status"})
+            res.send(JSON.stringify({res : "error retriving status"}))
         }
     })
 
