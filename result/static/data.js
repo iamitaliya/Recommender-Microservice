@@ -8,11 +8,11 @@ function recieve_recommendation(movie_name) {
             return response.text();
         }).then(function (html) {
             // This is the HTML from our response as a text string
-            if (html == "lol") {
+            if (html == "failed") {
                 document.getElementById("rec_label").style.display = "none"
                 document.getElementById("no_rec").style.color = "red"
                 document.getElementById("no_rec").innerHTML = "Uh oh! No recommendations found for this movie"
-                console.log("loled")
+                console.log("No recommendation found")
             } else
                 process_response(html)
         }).catch(function (err) {

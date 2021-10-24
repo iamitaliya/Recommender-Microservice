@@ -42,17 +42,26 @@ def load_data():
     return ratings, movies
 
 
-def get_movie_id(movie_name):
-    movie_name = movie_name.replace("'", "''")
+def get_movie_id(movie_name, tconst = False):
     conn = database_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        " SELECT id FROM movie_table WHERE title = '" + movie_name + "' ")
-    movie_id = cursor.fetchall()
-    if len(movie_id) > 0:
-        m_id = movie_id[0][0]
-    else:
-        return 0
+    if tconst:
+        cursor.execute(
+            " SELECT id FROM movie_table WHERE imdb_id = '" + movie_name + "' ")
+        movie_id = cursor.fetchall()
+        if len(movie_id) > 0:
+            m_id = movie_id[0][0]
+        else:
+            return 0
+    else:        
+        movie_name = movie_name.replace("'", "''")
+        cursor.execute(
+            " SELECT id FROM movie_table WHERE title = '" + movie_name + "' ")
+        movie_id = cursor.fetchall()
+        if len(movie_id) > 0:
+            m_id = movie_id[0][0]
+        else:
+            return 0
     return m_id
 
 
@@ -119,7 +128,7 @@ def find_similar_movies(movie_id, X, movie_mapper, movie_inv_mapper, k, metric='
 
 def recommend(movie_id):
     if movie_id == 0:
-        return ["lol"]
+        return ["failed"]
     rating, movie = load_data()
     print(rating.dtypes)
     print(movie.dtypes)
@@ -146,6 +155,16 @@ def get_recommendation(movie):
     recommended_movies = recommend(get_movie_id(clean_request(movie)))
     print("recieved request for ", movie)
     return ",".join(recommended_movies)
+
+# function to get recommendation from database
+@app.route("/get-recommendation/id/<tconst>", methods=['GET'])
+@cross_origin()
+def get_recommendation_id(tconst):
+    imdb_id = str(int(tconst[2:]))
+    recommended_movies = recommend(get_movie_id(imdb_id, True))
+    print("recieved request for ", imdb_id)
+    movies = ",".join(recommended_movies)
+    return jsonify({"res": "success", "movies":movies}) 
 
 
 # check if application is running

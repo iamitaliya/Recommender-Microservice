@@ -31,7 +31,8 @@ def create_tables():
     cursor = conn.cursor()
     cursor.execute("""CREATE TABLE IF NOT EXISTS movie_table
              (id INT PRIMARY KEY     NOT NULL,
-             title         TEXT    NOT NULL
+             title         TEXT    NOT NULL,
+             imdb_id TEXT
              );""")
     cursor.execute("""CREATE TABLE IF NOT EXISTS movie_map_table
              (id INT PRIMARY KEY     NOT NULL,
@@ -73,10 +74,12 @@ def data_download(url):
         ratings_data = pd.read_csv(ratings_file, header=0)
     with open("/".join([path, raw_data.split(".")[0], "tags.csv"]), "r") as tags_file:
         tags_data = pd.read_csv(tags_file, header=0)
+    with open("/".join([path, raw_data.split(".")[0], "links.csv"]), "r") as links_file:
+        links_data = pd.read_csv(links_file, header=0)
     if os.path.exists(raw_data):
         os.remove(raw_data)
         print("file removed")
-    return [movies_data, ratings_data, tags_data]
+    return [movies_data, ratings_data, tags_data, links_data]
 
 
 def remove_na(data):
@@ -89,21 +92,23 @@ def remove_duplicates(data):
     return data
 
 
-def load_tables(movies, m_ratings):
+def load_tables(movies, m_ratings, links):
     movies = remove_na(movies)
     movies = remove_duplicates(movies)
     m_ratings = remove_na(m_ratings)
-
+    movies = movies.merge(links, on='movieId')
+    print(movies)
     conn = database_connection()
     cur = conn.cursor()
     cur.execute("""DELETE FROM movie_table""")
     for row in movies.itertuples():
         mov_id = int(row.movieId)
         title = row.title
+        imdb_id = row.imdbId
         cur.execute("""
             INSERT INTO movie_table
-            VALUES (%s, %s);
-            """, (mov_id, title))
+            VALUES (%s, %s, %s);
+            """, (mov_id, title, imdb_id))
     cur.execute("""DELETE FROM rating_table""")
     id_r = 0
     for row in m_ratings.itertuples():
@@ -134,9 +139,9 @@ def clean_data(password):
             if password == PASSWORD:
                 print("Data loading process started")
                 url = "http://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
-                movies, ratings, tags = data_download(url)
+                movies, ratings, tags, links = data_download(url)
                 create_tables()
-                load_tables(movies, ratings)
+                load_tables(movies, ratings, links)
 
                 print("Data loaded successfully")
                 processing = False
@@ -149,8 +154,7 @@ def clean_data(password):
             processing = False
             return jsonify({"status": "Internal Error"})
     else:
-        return {"status": "Wait for process to finish"}
-
+        return jsonify({"status": "Wait for process to finish"})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=2111, debug=True)
