@@ -97,6 +97,15 @@ def load_tables(movies, m_ratings, links):
     movies = remove_duplicates(movies)
     m_ratings = remove_na(m_ratings)
     movies = movies.merge(links, on='movieId')
+    # cleaning data
+    new_title = []
+    for item in movies['title']:
+        if ", The" in item:
+            new_movie = item.replace(", The", "").strip()
+            new_title.append("The " + new_movie)
+        else:
+            new_title.append(item.strip())
+    movies['title'] = new_title
     print(movies)
     conn = database_connection()
     cur = conn.cursor()
