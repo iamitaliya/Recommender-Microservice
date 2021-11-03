@@ -8,6 +8,7 @@ import zipfile
 import os
 import psycopg2
 import multiprocessing
+import test_collector
 app = Flask('__name__')
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -166,4 +167,10 @@ def clean_data(password):
         return jsonify({"status": "Wait for process to finish"})
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=2111, debug=True)
+    print("======================  RUNNING UNIT TESTS (Collector) ====================== ")
+    if test_collector.unit_test():
+        print("======================  UNIT TESTS PASSED (Collector) ====================== ")
+        print("Starting Collector Microservice")
+        app.run(host='0.0.0.0', port=2111, debug=True)
+    else:
+        print("======================  UNIT TESTS FAILED (Collector) ====================== ")

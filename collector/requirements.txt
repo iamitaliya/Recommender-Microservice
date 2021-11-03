@@ -4,3 +4,4 @@ flask
 flask-cors
 psycopg2-binary
 pytest
+requests

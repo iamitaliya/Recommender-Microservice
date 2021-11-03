@@ -5,6 +5,7 @@ import pandas as pd
 from scipy.sparse import csr_matrix
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+import test_recommender
 
 
 # Flask related stuff
@@ -180,4 +181,11 @@ def clean_request(movie):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=2211, debug=True)
+    print("======================  RUNNING UNIT TESTS (Recommender) ====================== ")
+    if test_recommender.unit_test():
+        print("======================  UNIT TESTS PASSED (Recommender) ====================== ")
+        print("Starting Recommender Microservice")
+        app.run(host='0.0.0.0', port=2211, debug=True)
+    else:
+        print("======================  UNIT TESTS FAILED (Recommender) ====================== ")
+
