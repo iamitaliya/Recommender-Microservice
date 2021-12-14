@@ -127,6 +127,7 @@ function integration_passed(data_found){
         fetch("http://vis_collector:4321/api/load-data/MOVIES").then(response => response.json()).then(data => {
             if (data.status === "success") {
                 console.log("Data loaded successfully")
+                execute(app, true)
             } else {
                 console.log("Data loading failed")
             }
@@ -161,9 +162,11 @@ async function check_status(url)
 }
 
 
-async function execute(app) {
+async function execute(app, port_opened=false) {
     try {
-        openPort(app)
+        if (!port_opened){
+            openPort(app)
+        }
         await client.connect()
         // console.log("Connected successfully")
         movies = await client.query("select title from movie_table")
@@ -174,7 +177,6 @@ async function execute(app) {
         }
         arr1 = [].concat.apply([], arr1)
         toJSON(arr1)
-        // console.log(arr1)
         // console.log("Client disconnected")
     }
     catch (ex) {

@@ -46,6 +46,7 @@ function process_response(recommendation) {
 function autocomplete(inp, arr) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
+    // source : https://www.w3schools.com/howto/howto_js_autocomplete.asp
     var currentFocus;
     /*execute a function when someone writes in the text field:*/
     inp.addEventListener("input", function (e) {
@@ -143,12 +144,7 @@ function autocomplete(inp, arr) {
 }
 
 
-// get the list of available movies
-// async function getJSON(path) {
-//     const response = await fetch(path);
-//     console.log("Json is called")
-//     return await response.json();
-// }
+
 function getJSON(path) {
     return fetch(path).then(response => response.json());
 }

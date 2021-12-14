@@ -57,11 +57,6 @@ def create_tables():
     conn.close()
     return is_table
 
-# data downloading
-# data cleaning
-# data send to database
-
-
 def data_download(url):
     print("Downloading data")
     raw_data = wget.download(url)
@@ -82,11 +77,9 @@ def data_download(url):
         print("file removed")
     return [movies_data, ratings_data, tags_data, links_data]
 
-
 def remove_na(data):
     data.dropna(axis=0, inplace=True)
     return data
-
 
 def remove_duplicates(data):
     data.drop_duplicates(inplace=True)

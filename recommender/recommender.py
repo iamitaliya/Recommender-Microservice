@@ -23,9 +23,7 @@ def database_connection():
 def load_data():
     conn = database_connection()
     cursor = conn.cursor()
-    # cursor.execute(
-    #     "SELECT m.primarytitle, m.titletype, r.votes, r.averagerating FROM movie_table m, rating_table r where "
-    #     "r.tconst = m.tconst;")
+    
     cursor.execute(
         "SELECT user_id, movie_id, rating FROM rating_table")
     rating_data = cursor.fetchall()
@@ -34,10 +32,10 @@ def load_data():
         columns={0: 'user_id', 1: 'movie_id', 2: 'rating'}, inplace=True)
     ratings = ratings.apply(pd.to_numeric)
     cursor.execute(
-        "SELECT id, title FROM movie_table")
+        "SELECT id, title, imdb_id FROM movie_table")
     movies_data = cursor.fetchall()
     movies = pd.DataFrame(movies_data)
-    movies.rename(columns={0: 'id', 1: 'title'}, inplace=True)
+    movies.rename(columns={0: 'id', 1: 'title', 2: 'tconst'}, inplace=True)
     conn.commit()
     print("Data loaded successfully")
     return ratings, movies
@@ -47,12 +45,15 @@ def get_movie_id(movie_name, tconst = False):
     conn = database_connection()
     cursor = conn.cursor()
     if tconst:
-        cursor.execute(
-            " SELECT id FROM movie_table WHERE imdb_id = '" + movie_name + "' ")
-        movie_id = cursor.fetchall()
-        if len(movie_id) > 0:
-            m_id = movie_id[0][0]
-        else:
+        try:
+            cursor.execute(
+                " SELECT id FROM movie_table WHERE imdb_id = '" + movie_name + "' ")
+            movie_id = cursor.fetchall()
+            if len(movie_id) > 0:
+                m_id = movie_id[0][0]
+            else:
+                return 0
+        except:
             return 0
     else:        
         movie_name = movie_name.replace("'", "''")
@@ -79,6 +80,8 @@ def create_X(df):
         user_inv_mapper: dict that maps user indices to user id's
         movie_mapper: dict that maps movie id's to movie indices
         movie_inv_mapper: dict that maps movie indices to movie id's
+
+    Source: https://github.com/topspinj
     """
     M = df['user_id'].nunique()
     N = df['movie_id'].nunique()
@@ -108,6 +111,8 @@ def find_similar_movies(movie_id, X, movie_mapper, movie_inv_mapper, k, metric='
         metric: distance metric for kNN calculations
 
     Output: returns list of k similar movie ID's
+
+    Source: https://github.com/topspinj
     """
     X = X.T
     neighbour_ids = []
@@ -129,10 +134,8 @@ def find_similar_movies(movie_id, X, movie_mapper, movie_inv_mapper, k, metric='
 
 def recommend(movie_id):
     if movie_id == 0:
-        return ["failed"]
+        return ["failed"], [""]
     rating, movie = load_data()
-    print(rating.dtypes)
-    print(movie.dtypes)
     X, user_mapper, movie_mapper, user_inv_mapper, movie_inv_mapper = create_X(
         rating)
 
@@ -144,16 +147,18 @@ def recommend(movie_id):
 
     # print(f"Because you watched {movie_title}:")
     recommended_movie = []
+    rec_tconst = []
     for i in similar_movies:
         recommended_movie.append(movie_titles[i])
-    return recommended_movie
+        # rec_tconst.append(process_tconst(movie['tconst'][i]))
+    return recommended_movie, rec_tconst
 
 
 # function to get recommendation from database
 @app.route("/get-recommendation/<movie>", methods=['GET'])
 @cross_origin()
 def get_recommendation(movie):
-    recommended_movies = recommend(get_movie_id(clean_request(movie)))
+    recommended_movies, recommended_tconst = recommend(get_movie_id(clean_request(movie)))
     print("recieved request for ", movie)
     return ",".join(recommended_movies)
 
@@ -161,17 +166,31 @@ def get_recommendation(movie):
 @app.route("/get-recommendation/id/<tconst>", methods=['GET'])
 @cross_origin()
 def get_recommendation_id(tconst):
-    imdb_id = str(int(tconst[2:]))
-    recommended_movies = recommend(get_movie_id(imdb_id, True))
-    print("recieved request for ", imdb_id)
-    movies = ",".join(recommended_movies)
-    return jsonify({"res": "success", "movies":movies}) 
+    try:
+        imdb_id = str(int(tconst[2:]))
+        recommended_movies, recommended_tconst = recommend(get_movie_id(imdb_id, True))
+        print("recieved request for ", imdb_id)
+        movies = ",".join(recommended_movies)
+        tconsts = ",".join(recommended_tconst)
+        return jsonify({"res": "success", "movies":movies, "tconst":tconsts}) 
+    except:
+        return jsonify({"res": "failed", "movies": "", "tconst":""})
 
 
 # check if application is running
 @app.route("/api/check-status", methods=['GET'])
 def check_status():
     return jsonify({"status": "success"})
+
+def process_tconst(tconst):
+    new_tconst = ""
+    length = 7 - len(str(tconst))
+    if length > 0:
+        new_tconst = "tt" + "0"*length + tconst
+    else:
+        new_tconst = "tt" + tconst
+    return new_tconst
+
 
 
 def clean_request(movie):

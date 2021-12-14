@@ -34,8 +34,6 @@ def test_db_connection():
 def unit_test():
     tests = {}
     tests["Data Cleaning Test:"] = test_is_cleaned()
-    # tests["Recommendation Test:"] = test_recommend()  # it may not work if there is not data in database i.e. running for the first time
-    # tests["Get Movie ID Test:"] = test_get_movie_id()
     tests["Database Connection:"] = test_db_connection()
     print("Found", len(tests), "tests..." )
     for test, result in tests.items():
